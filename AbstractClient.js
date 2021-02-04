@@ -7,18 +7,19 @@
 class AbstractClient
 {
     /**
-     * @param {Object} connectOptions required if socket is not set.
+     * @param {Object | null} connectOptions required if socket is not set.
      *  {
-     *      host: <string | null>, RFC6066 states that this should not be an IP address, but a name when using TLS)
+     *      host: <string | null>, (RFC6066 states that this should not be an IP address, but a name when using TLS)
      *      port: <number>,
      *      secure: <boolean | null> (defualt false, set to true to make a secure connection)
      *      rejectUnauthorized: <boolean | null> (default true),
-     *      cert: <Array | string | Buffer | null>, (client can identify with cert)
-     *      key: <Array | string | Buffer | null>, (required if cert is set)
-     *      ca: <Array | string | Buffer | null>, (set this to validate server self-signed certificate)
+     *      cert: <string | Buffer | null>, (client can identify with cert)
+     *      key: <string | Buffer | null>, (required if cert is set)
+     *      ca: <string | Buffer | null>, (set this to validate server self-signed certificate)
      *  }
      *
      * @param {Socket} [socket] Optionally provide an already connected socket (typically for server client sockets). connectOptions can then be set to null.
+     * @throws An error will be thrown when connectOptions is not valid.
      */
     constructor(connectOptions, socket)
     {
@@ -90,6 +91,10 @@ class AbstractClient
     /**
      * Send buffer on socket.
      *
+     * @param {Buffer | string} buffer - data to be sent
+     * @throws An error will be thrown when buffer data type is incompatible.
+     *  An error will be thrown when no socket connection is available.
+     *  An error will be thrown when connection is flagged as disconnected.
      */
     send(buffer)
     {
@@ -129,6 +134,9 @@ class AbstractClient
 
     /**
      * User hook for socket errors.
+     *
+     * @param {Function} fn - on error callback
+     *
      */
     onError(fn)
     {
@@ -137,6 +145,9 @@ class AbstractClient
 
     /**
      * Unhook for socket errors.
+     *
+     * @param {Function} fn - remove existing error callback
+     *
      */
     offError(fn)
     {
@@ -145,7 +156,8 @@ class AbstractClient
 
     /**
      * User hook for incoming data.
-     * Callback function is passed a Buffer object.
+     *
+     * @param {Function} fn - on data callback. Function is passed a Buffer object.
      */
     onData(fn)
     {
@@ -154,6 +166,9 @@ class AbstractClient
 
     /**
      * Unhook for socket data.
+     *
+     * @param {Function} fn - remove data callback.
+     *
      */
     offData(fn)
     {
@@ -162,6 +177,9 @@ class AbstractClient
 
     /**
      * User hook for connection event.
+     *
+     * @param {Function} fn - on connect callback.
+     *
      */
     onConnect(fn)
     {
@@ -170,6 +188,9 @@ class AbstractClient
 
     /**
      * Unhook connection event.
+     *
+     * @param {Function} fn - remove connect callback.
+     *
      */
     offConnect(fn)
     {
@@ -178,6 +199,9 @@ class AbstractClient
 
     /**
      * User hook for disconnect event.
+     *
+     * @param {Function} fn - on disconnect callback.
+     *
      */
     onDisconnect(fn)
     {
@@ -186,12 +210,22 @@ class AbstractClient
 
     /**
      * Unhook disconnect event
+     *
+     * @param {Function} fn - remove disconnect callback.
+     *
      */
     offDisconnect(fn)
     {
         this._off("disconnect", fn);
     }
 
+    /**
+     * Base on event procedure responsible for adding a callback to the list of event handlers.
+     *
+     * @param {string} event - event name.
+     * @param {Function} fn - callback.
+     *
+     */
     _on(event, fn)
     {
         const tuple = (this.eventHandlers[event] || [[], []]);
@@ -207,6 +241,13 @@ class AbstractClient
         fns.push(fn);
     }
 
+    /**
+     * Base off event procedure responsible for removing a callback from the list of event handlers.
+     *
+     * @param {string} event - event name.
+     * @param {Function} fn - callback.
+     *
+     */
     _off(event, fn)
     {
         const [fns, queue] = (this.eventHandlers[event] || [[], []]);
@@ -222,6 +263,12 @@ class AbstractClient
         this._triggerEvent("disconnect", this);
     }
 
+    /**
+     * Base data event procedure responsible for triggering the data event.
+     *
+     * @param {Buffer} data - data buffer.
+     *
+     */
     _data(data)
     {
         if ( !(data instanceof Buffer)) {
@@ -236,11 +283,26 @@ class AbstractClient
         this._triggerEvent("connect");
     }
 
+
+    /**
+     * Base error event procedure responsible for triggering the error event.
+     *
+     * @param {string} msg - error message.
+     *
+     */
     _error(msg)
     {
         this._triggerEvent("error", msg);
     }
 
+    /**
+     * Trigger event calls the appropriate handler based on the event name.
+     *
+     * @param {string} event - event name.
+     * @param {Buffer} [data] - event data.
+     * @param {boolean} [doBuffer] - buffers up event data.
+     *
+     */
     _triggerEvent(event, data, doBuffer)
     {
         const [fns, queue] = (this.eventHandlers[event] || [[], []]);
@@ -257,6 +319,20 @@ class AbstractClient
         }
     }
 
+    /**
+     * @param {Object} options
+     *  {
+     *      host: <string | null>, (RFC6066 states that this should not be an IP address, but a name when using TLS)
+     *      port: <number>,
+     *      secure: <boolean | null> (defualt false, set to true to make a secure connection)
+     *      rejectUnauthorized: <boolean | null> (default true),
+     *      cert: <string | Buffer | null>, (client can identify with cert)
+     *      key: <string | Buffer | null>, (required if cert is set)
+     *      ca: <string | Buffer | null>, (set this to validate server self-signed certificate)
+     *  }
+     *
+     * @throws An error will be thrown when connectOptions is not a valid configuration.
+     */
     static ValidateConfig(options)
     {
         if (!options) {
