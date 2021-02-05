@@ -1,0 +1,43 @@
+name: CI
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Workflow jobs description
+jobs:
+  test_all:
+    runs-on: ubuntu-latest
+
+    container: node:12-alpine
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: universe-ai/core-js
+          path: ./core-js
+
+      - uses: actions/checkout@v2
+        with:
+          repository: universe-ai/pocket-messaging
+          path: ./core-js/pocket-messaging
+
+      - uses: actions/checkout@v2
+        with:
+          repository: universe-ai/pocket-sockets
+          path: ./core-js/pocket-sockets
+
+      - name: Test all
+        run: |
+          cd ./core-js
+          yarn install
+          cd ./pocket-sockets
+          yarn install
+          yarn run test
