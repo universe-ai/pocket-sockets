@@ -15,10 +15,12 @@
   "license": "MIT",
   "bugs": "",
   "scripts": {
+      "test": "jest --silent --color --collectCoverageFrom=./*.js --coverageProvider=v8 --detectOpenHandles=true --errorOnDeprecated=true --verbose --collectCoverage ./test/. "
   },
   "dependencies": {
     "ws": "^7.3.1"
   },
   "devDependencies": {
+    "jest": "^26.6.3"
   }
 }
