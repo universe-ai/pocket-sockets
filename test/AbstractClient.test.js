@@ -634,7 +634,6 @@ describe("AbstractClient", () => {
                 assert(flag == true);
             });
         });
-
     });
 
     describe("_connect", () => {
