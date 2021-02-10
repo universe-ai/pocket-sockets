@@ -36,6 +36,7 @@ class AbstractClient
         this._data          = this._data.bind(this);
         this._error         = this._error.bind(this);
         this._disconnect    = this._disconnect.bind(this);
+        this.userData       = {};  // Arbitrary data associated with socket
 
         if (this.socket) {
             this._socketHook();
