@@ -11,7 +11,7 @@ class AbstractClient
      *  {
      *      host: <string | null>, (RFC6066 states that this should not be an IP address, but a name when using TLS)
      *      port: <number>,
-     *      secure: <boolean | null> (defualt false, set to true to make a secure connection)
+     *      secure: <boolean | null> (default false, set to true to make a secure connection)
      *      rejectUnauthorized: <boolean | null> (default true),
      *      cert: <string | Buffer | null>, (client can identify with cert)
      *      key: <string | Buffer | null>, (required if cert is set)
@@ -324,7 +324,7 @@ class AbstractClient
      *  {
      *      host: <string | null>, (RFC6066 states that this should not be an IP address, but a name when using TLS)
      *      port: <number>,
-     *      secure: <boolean | null> (defualt false, set to true to make a secure connection)
+     *      secure: <boolean | null> (default false, set to true to make a secure connection)
      *      rejectUnauthorized: <boolean | null> (default true),
      *      cert: <string | Buffer | null>, (client can identify with cert)
      *      key: <string | Buffer | null>, (required if cert is set)
