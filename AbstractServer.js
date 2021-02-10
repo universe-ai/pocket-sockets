@@ -9,17 +9,18 @@ class AbstractServer
     /**
      * @param {Object} listenOptions
      *  {
-     *      host: <string | null>,
-     *      port: <number>,
-     *      ipv6Only: <boolean | null>,
-     *      rejectUnauthorized: <boolean | null>, (default true, only applicable is requestCert is true)
-     *      requestCert: <boolean | null>, (default false)
-     *      cert: <Array | string | Buffer | null>, (if set the socket becomes secure)
-     *      key: <Array | string | Buffer | null>, (required if cert is set)
-     *      ca: <Array | string | Buffer | null>, (set this to validate client self-signed certificate)
+     *      host: <string | null>
+     *      port: <number>
+     *      ipv6Only: <boolean | null>
+     *      rejectUnauthorized: <boolean | null> (generally set to true by implementations. Only applicable for secure connections)
+     *      requestCert: <boolean | null> (default false)
+     *      cert: <Array | string | Buffer | null> (if set the socket becomes secure)
+     *      key: <Array | string | Buffer | null> (required if cert is set)
+     *      ca: <Array | string | Buffer | null> (set this to validate client self-signed certificate)
      *  }
      *
      *  A listener automatically becomes secure if cert/key are set.
+     * @throws An error will be thrown when listenOptions is invalid.
      */
     constructor(listenOptions)
     {
@@ -104,7 +105,7 @@ class AbstractServer
     }
 
     /**
-     * Event handler triggered when a server error has connected.
+     * Event handler triggered when a server error occurs.
      *
      * An error object is passed as argument to fn().
      *
@@ -125,6 +126,11 @@ class AbstractServer
         this._on("close", fn);
     }
 
+    /**
+     * Performs all operations involved in registering a new client connection.
+     *
+     * @param {AbstractClient} client
+     */
     _addClient(client)
     {
         this.clients.push(client);
@@ -132,6 +138,11 @@ class AbstractServer
         this._triggerEvent("connection", client);
     }
 
+    /**
+     * Performs all operations involved in removing an existing client registration.
+     *
+     * @param {AbstractClient} client
+     */
     _removeClient(client)
     {
         const index = this.clients.indexOf(client);
@@ -140,22 +151,46 @@ class AbstractServer
         }
     }
 
+    /**
+     * Internal procedure to serve all client connection events.
+     *
+     * @param {Socket} socket
+     * @throws An error will be thrown when SocketType is invalid or not set.
+     */
     _connection(socket)
     {
-        const client = new this.SocketType(null, socket);
-        this._addClient(client);
+        if (!this.SocketType) {
+            throw "SocketType must be a valid instance";
+        } else {
+            const client = new this.SocketType(null, socket);
+            this._addClient(client);
+        }
     }
 
+    /**
+     * Internal error event implementation.
+     *
+     * @param {Error} err
+     */
     _error(err)
     {
         this._triggerEvent("error", (err && err.message) ? err.message : err);
     }
 
+    /**
+     * Internal close event implementation.
+     */
     _close()
     {
         this._triggerEvent("close");
     }
 
+    /**
+     * Internal event implementation.
+     *
+     * @param {string} event
+     * @param {Function} fn
+     */
     _on(event, fn)
     {
         const fns = this.eventHandlers[event] || [];
@@ -163,6 +198,12 @@ class AbstractServer
         fns.push(fn);
     }
 
+    /**
+     * Internal event trigger implementation.
+     *
+     * @param {string} event
+     * @param {any} data
+     */
     _triggerEvent(event, data)
     {
         const fns = this.eventHandlers[event] || [];
@@ -171,6 +212,20 @@ class AbstractServer
         });
     }
 
+    /**
+     * @param {Object} options
+     *  {
+     *      host: <string | null> (RFC6066 states that this should not be an IP address, but a name when using TLS)
+     *      port: <number>
+     *      ipv6Only: <boolean | null> (commonly set to false by implementations. Enable to use IPv6 only)
+     *      rejectUnauthorized: <boolean | null> (generally set to true by implementations. Only applicable for secure connections)
+     *      cert: <string | Buffer | null> (client can identify with cert)
+     *      key: <string | Buffer | null> (required if cert is set)
+     *      ca: <string | Buffer | null> (set this to validate server self-signed certificate)
+     *  }
+     *
+     * @throws An error will be thrown when options is not a valid configuration.
+     */
     static ValidateConfig(options)
     {
         if (!options) {
