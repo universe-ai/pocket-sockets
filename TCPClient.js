@@ -3,8 +3,15 @@ const tls = require("tls");
 
 const AbstractClient = require("./AbstractClient.js");
 
+/**
+ * TCP client socket implementation.
+ */
 class TCPClient extends AbstractClient
 {
+
+    /**
+     * Specifies how the socket gets initialized and created, then establishes a connection.
+     */
     _socketConnect()
     {
         const USE_TLS = this.connectOptions.secure ? true: false;
@@ -38,6 +45,9 @@ class TCPClient extends AbstractClient
         }
     }
 
+    /**
+     * Specifies hooks to be called as part of the connect procedure.
+     */
     _socketHook()
     {
         this.socket.on("data", this._data);             // Incoming data
@@ -45,11 +55,18 @@ class TCPClient extends AbstractClient
         this.socket.on("close", this._disconnect);      // Socket closed
     }
 
+    /**
+     * Defines how data gets written to the socket.
+     * @param {Buffer} buffer - data to be sent
+     */
     _socketSend(buffer)
     {
         this.socket.write(buffer);
     }
 
+    /**
+     * Defines the steps to be performed during disconnect.
+     */
     _socketDisconnect()
     {
         this.socket.end();
