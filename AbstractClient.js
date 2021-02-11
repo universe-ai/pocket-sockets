@@ -84,6 +84,9 @@ class AbstractClient
         throw "Function not implemented.";
     }
 
+    /**
+     * Socket-specific disconnect procedure.
+     */
     _socketDisconnect()
     {
         throw "Function not implemented.";
@@ -258,6 +261,9 @@ class AbstractClient
         }
     }
 
+    /**
+     * Base disconnect event procedure responsible for triggering the disconnect event.
+     */
     _disconnect()
     {
         this.isDisconnected = true;
@@ -279,6 +285,9 @@ class AbstractClient
         this._triggerEvent("data", data, this.bufferData);
     }
 
+    /**
+     * Base connect event procedure responsible for triggering the connect event.
+     */
     _connect()
     {
         this._triggerEvent("connect");
