@@ -4,6 +4,9 @@ const tls = require("tls");
 const TCPClient = require("./TCPClient");
 const AbstractServer = require("./AbstractServer");
 
+/**
+ * TCP server implementation.
+ */
 class TCPServer extends AbstractServer
 {
     constructor(listenOptions)
@@ -12,6 +15,9 @@ class TCPServer extends AbstractServer
         this.SocketType = TCPClient;
     }
 
+    /**
+     * Specifies how the server gets initialized, then creates the server with the specified options.
+     */
     _serverCreate()
     {
         const USE_TLS = this.listenOptions.cert != null;
@@ -52,6 +58,10 @@ class TCPServer extends AbstractServer
         this.server.on("tlsClientError", (_err, socket) => socket.end());
     }
 
+    /**
+     * Starts a previously created server listening for connections.
+     * Assumes the server is instantiated during object creation.
+     */
     _serverListen()
     {
         this.server.listen({
