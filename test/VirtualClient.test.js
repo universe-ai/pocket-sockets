@@ -53,8 +53,14 @@ describe("VirtualClient", () => {
                 let client1, client2;
                 [client1, client2 ] = CreatePair();
                 assert(client1.outQueue.length == 0);
+
+                let called = false;
+                client1._copyToPaired = function() {
+                    called = true;
+                }
+
                 client1._socketSend(Buffer.from("testdata"));
-                console.warn(client1.outQueue.length);
+                assert(called == true);
             });
         });
     });
@@ -88,12 +94,16 @@ describe("VirtualClient", () => {
                 let client1, client2;
                 [client1, client2 ] = CreatePair();
 
+                let copiedBuffer;
                 client2._data = function(buffer) {
-                    assert(buffer.toString() == "fromclient1");
+                    if(buffer) {
+                        copiedBuffer = buffer;
+                    }
                 }
 
                 client1._socketSend(Buffer.from("fromclient1"));
                 client1._copyToPaired();
+                assert(copiedBuffer.toString() == "fromclient1");
             });
         });
     });
