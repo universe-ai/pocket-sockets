@@ -3,11 +3,13 @@ const AbstractClient = require("./AbstractClient.js");
 class VirtualClient extends AbstractClient
 {
     /**
-     * @param {VirtualSocket} [pairedSocket] When creating the second socket socket of a socket-pair provide the first socket as argument to get them paired.
+     * @constructor
+     * @param {VirtualSocket} [pairedSocket] When creating the second socket of a socket-pair provide the first socket as argument to get them paired.
      */
     constructor(pairedSocket)
     {
         super(null, {});
+
         this.pairedSocket = pairedSocket;
 
         /** We can set this to simulate some latency in the paired socket communication */
@@ -21,6 +23,7 @@ class VirtualClient extends AbstractClient
          */
         this.outQueue = [];
 
+        /* Complete the pair by assigning this socket to the paired socket */
         if (this.pairedSocket) {
             this.pairedSocket.pairedSocket = this;
         }
@@ -36,11 +39,18 @@ class VirtualClient extends AbstractClient
         this.latency = latency;
     }
 
+    /**
+     * Hook events on the socket.
+     */
     _socketHook()
     {
         // We handle events in different ways since this is not an actual socket.
     }
 
+    /**
+     * Send the given buffer on socket.
+     * @param {Buffer} buffer
+     */
     _socketSend(buffer)
     {
         // Put msg into paired socket.
@@ -54,6 +64,9 @@ class VirtualClient extends AbstractClient
         }
     }
 
+    /**
+     * Specify the paired disconnect procedure.
+     */
     _socketDisconnect()
     {
         if (this.pairedSocket) {
