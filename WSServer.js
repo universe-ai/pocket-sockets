@@ -3,6 +3,9 @@ const WSClient = require("./WSClient");
 
 const AbstractServer = require("./AbstractServer");
 
+/**
+ * WebSocket server implementation.
+ */
 class WSServer extends AbstractServer
 {
     constructor(listenOptions)
@@ -12,6 +15,9 @@ class WSServer extends AbstractServer
         this.SocketType = WSClient;
     }
 
+    /**
+     * Specifies how the server gets initialized, then creates the server with the specified options.
+     */
     _serverCreate()
     {
         const USE_TLS = this.listenOptions.cert != null;
@@ -50,6 +56,10 @@ class WSServer extends AbstractServer
         this.server.on("tlsClientError", this._error);
     }
 
+    /**
+     * Starts a previously created server listening for connections.
+     * Assumes the server is instantiated during object creation.
+     */
     _serverListen()
     {
         this.wsServer = new WebSocket.Server({
@@ -73,6 +83,9 @@ class WSServer extends AbstractServer
         });
     }
 
+    /**
+     * Overrides server close procedure.
+     */
     _serverClose()
     {
         if (this.wsServer) {
