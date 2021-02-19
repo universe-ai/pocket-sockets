@@ -21,8 +21,14 @@ if (typeof WebSocket !== "undefined") {
 
 const AbstractClient = require("./AbstractClient.js");
 
+/**
+ * WebSocket client implementation.
+ */
 class WSClient extends AbstractClient
 {
+    /**
+     * Specifies how the socket gets initialized and created, then establishes a connection.
+     */
     _socketConnect()
     {
         const USE_TLS = this.connectOptions.secure ? true: false;
@@ -60,6 +66,9 @@ class WSClient extends AbstractClient
         this.socket.onopen      = this._connect;
     }
 
+    /**
+     * Specifies hooks to be called as part of the connect procedure.
+     */
     _socketHook()
     {
         this.socket.onmessage   = (msg) => this._data(msg.data);          // Incoming data
@@ -67,11 +76,18 @@ class WSClient extends AbstractClient
         this.socket.onclose     = this._disconnect;      // Socket closed
     }
 
+    /**
+     * Defines how data gets written to the socket.
+     * @param {Buffer} buffer - data to be sent
+     */
     _socketSend(buffer)
     {
         this.socket.send(buffer, {binary: true, compress: false});
     }
 
+    /**
+     * Defines the steps to be performed during disconnect.
+     */
     _socketDisconnect()
     {
         this.socket.close();
