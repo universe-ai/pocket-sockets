@@ -45,7 +45,7 @@ class WSClient extends AbstractClient
             this.socket = new ws(address);
         } else {
             this.socket = new ws(address, {
-                // Server certificate, must be set when using TLS.
+                // Client certificate, can be set when using TLS, could be required by the server.
                 cert: this.connectOptions.cert,
                 key: this.connectOptions.key,
 
