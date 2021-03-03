@@ -315,7 +315,9 @@ class AbstractClient
      */
     _triggerEvent(event, data, doBuffer)
     {
-        const [fns, queue] = (this.eventHandlers[event] || [[], []]);
+        const tuple = (this.eventHandlers[event] || [[], []]);
+        this.eventHandlers[event] = tuple;
+        const [fns, queue] = tuple;
         if (fns.length === 0) {
             if (doBuffer) {
                 // Buffer up the event
