@@ -43,6 +43,8 @@ class WSClient extends AbstractClient
 
         if(isBrowser) {
             this.socket = new ws(address);
+            // Make sure binary type is set to ArrayBuffer instead of Blob
+            this.socket.binaryType = "arraybuffer";
         } else {
             this.socket = new ws(address, {
                 // Client certificate, can be set when using TLS, could be required by the server.
@@ -71,7 +73,17 @@ class WSClient extends AbstractClient
      */
     _socketHook()
     {
-        this.socket.onmessage   = (msg) => this._data(msg.data);          // Incoming data
+        this.socket.onmessage   = (msg) => {
+            let data = msg.data;
+
+            // Under Browser settings, convert message data from ArrayBuffer to Buffer.
+            if (isBrowser) {
+                const bytes = new Uint8Array(data);
+                data = Buffer.from(bytes);
+            }
+
+            this._data(data);          // Incoming data
+        };
         this.socket.onerror     = this._error;           // Error connecting
         this.socket.onclose     = this._disconnect;      // Socket closed
     }
