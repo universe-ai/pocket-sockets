@@ -44,6 +44,46 @@ class AbstractClient
     }
 
     /**
+     * @return {string} local IP address
+     */
+    getLocalAddress()
+    {
+        if (this.socket) {
+            return this.socket.localAddress;
+        }
+    }
+
+    /**
+     * @return {string} remote IP address
+     */
+    getRemoteAddress()
+    {
+        if (this.socket) {
+            return this.socket.remoteAddress;
+        }
+    }
+
+    /**
+     * @return {number} remote port
+     */
+    getRemotePort()
+    {
+        if (this.socket) {
+            return this.socket.remotePort;
+        }
+    }
+
+    /**
+     * @return {number} local port
+     */
+    getLocalPort()
+    {
+        if (this.socket) {
+            return this.socket.localPort;
+        }
+    }
+
+    /**
      * Connect to server.
      *
      */
