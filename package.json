@@ -2,7 +2,7 @@
   "name": "@universe-ai/pocket-sockets",
   "version": "1.1.0",
   "description": "A powerful and smooth sockets library for browser and nodejs, supporting both websockets and regular TCP sockets, encrypted or not.",
-  "keywords": [],
+  "keywords": ["sockets", "library", "browser", "nodejs", "websockets", "raw", "tcp", "encrypted", "encryption", "networking", "communication", "layer"],
   "homepage": "https://universe.ai",
   "author": "Universe.ai <devnull@universe.ai>",
   "repository": {
@@ -15,6 +15,9 @@
   "homepage": "https://github.com/universe-ai/pocket-sockets#readme",
   "private": false,
   "license": "MIT",
+  "engines": {
+      "node": ">=12"
+  },
   "scripts": {
     "test": "jest --silent --color --collectCoverageFrom=./*.js --coverageProvider=v8 --detectOpenHandles=true --errorOnDeprecated=true --verbose --collectCoverage ./test/. "
   },
